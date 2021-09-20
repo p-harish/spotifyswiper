@@ -3,6 +3,7 @@ package me.harishpartha.spotifyswiper;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.media.Image;
 import android.os.Bundle;
@@ -95,34 +96,36 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
                 Spotify.searchSongs(s1, this);
                 break;
             case R.id.tableRow0:
-                Spotify.addSong(songs[0], this);
+                Spotify.addSong(songs[0]);
+                Intent intent2 = new Intent(this, Swipe.class);
+                startActivity(intent2);
                 break;
             case R.id.tableRow1:
-                Spotify.addSong(songs[1], this);
+                Spotify.addSong(songs[1]);
                 break;
             case R.id.tableRow2:
-                Spotify.addSong(songs[2], this);
+                Spotify.addSong(songs[2]);
                 break;
             case R.id.tableRow3:
-                Spotify.addSong(songs[3], this);
+                Spotify.addSong(songs[3]);
                 break;
             case R.id.tableRow4:
-                Spotify.addSong(songs[4], this);
+                Spotify.addSong(songs[4]);
                 break;
             case R.id.tableRow5:
-                Spotify.addSong(songs[5], this);
+                Spotify.addSong(songs[5]);
                 break;
             case R.id.tableRow6:
-                Spotify.addSong(songs[6], this);
+                Spotify.addSong(songs[6]);
                 break;
             case R.id.tableRow7:
-                Spotify.addSong(songs[7], this);
+                Spotify.addSong(songs[7]);
                 break;
             case R.id.tableRow8:
-                Spotify.addSong(songs[8], this);
+                Spotify.addSong(songs[8]);
                 break;
             case R.id.tableRow9:
-                Spotify.addSong(songs[9], this);
+                Spotify.addSong(songs[9]);
                 break;
             default:
                 break;

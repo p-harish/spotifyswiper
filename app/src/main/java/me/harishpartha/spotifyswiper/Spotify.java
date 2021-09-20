@@ -13,6 +13,7 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +51,34 @@ public class Spotify {
     private static String jString = "";
 
     private static Queue<String> queue = new PriorityQueue<String>();
+
+    private static String[] recommendationsName = new String[100];
+    private static String[] recommendationsCover = new String[100];
+    private static String[] recommendationsArtist = new String[100];
+    private static String[] recommendationsURL = new String[100];
+
+    private static int recommendationsSize;
+
+    public static int getRecommendationsSize() {
+        return recommendationsSize;
+    }
+
+    public static String[] getRecommendationsName() {
+        return recommendationsName;
+    }
+
+    public static String[] getRecommendationsCover() {
+        return recommendationsCover;
+    }
+
+    public static String[] getRecommendationsArtist() {
+        return recommendationsArtist;
+    }
+
+    public static String[] getRecommendationsURL() {
+        return recommendationsURL;
+    }
+
 
     public static boolean isSdkConnection() {
         return sdkConnection;
@@ -150,6 +179,7 @@ public class Spotify {
                         playListId = jObject.getString("id");
                         Log.d("JSON", "id " + playListId);
 
+
                     } catch (JSONException e) {
                         Log.e("JSON", "failed to make json" + e);
                     }
@@ -199,7 +229,7 @@ public class Spotify {
 
     }
 
-    public static void addSong(String track, Context context) {
+    public static void addSong(String track) {
 
         RequestBody body = RequestBody.create("", null);
 
@@ -277,6 +307,17 @@ public class Spotify {
                     try {
                         jObject = new JSONObject(jString);
                         Log.d("JSON", "recommendations " + jString);
+                        JSONArray arr = jObject.getJSONArray("tracks");
+                        recommendationsSize = arr.length();
+                        for (int i = 0; i < recommendationsSize; i++) {
+                            JSONObject obj = arr.getJSONObject(i);
+                            recommendationsName[i] = obj.getString("name");
+                            recommendationsArtist[i] = obj.getJSONArray("artists").getJSONObject(0).getString("name");
+                            recommendationsCover[i] = obj.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                            recommendationsURL[i] = obj.getString("uri");
+                            Log.d("recommendations:", i + recommendationsURL[i] + recommendationsArtist[i] + recommendationsName[i] + recommendationsCover[i]);
+                        }
+
                     } catch (JSONException e) {
                         Log.e("JSON", "search failed to make json" + e);
                     }
@@ -285,6 +326,10 @@ public class Spotify {
             }
         });
 
+    }
+
+    public static void playSong(String track) {
+        mSpotifyAppRemote.getPlayerApi().play(track);
     }
 }
 
