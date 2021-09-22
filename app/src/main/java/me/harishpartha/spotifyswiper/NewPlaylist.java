@@ -25,6 +25,8 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.TimeUnit;
+
 public class NewPlaylist extends AppCompatActivity implements View.OnClickListener {
 
 
@@ -86,7 +88,7 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
                 LinearLayout createPlaylistView = findViewById(R.id.createPlaylistView);
                 createPlaylistView.setVisibility(View.GONE);
 
-                LinearLayout searchSongsView = findViewById(R.id.searchSongsView);
+                LinearLayout searchSongsView = findViewById(R.id.songSearchView);
                 searchSongsView.setVisibility(View.VISIBLE);
                 Spotify.createPlaylist(s);
                 break;
@@ -97,11 +99,31 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
                 break;
             case R.id.tableRow0:
                 Spotify.addSong(songs[0]);
+                Swipe.setup();
                 Intent intent2 = new Intent(this, Swipe.class);
-                startActivity(intent2);
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (!Swipe.loadingDone) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("This code is outside of the thread");
+                            startActivity(intent2);
+                            finish();
+                        }
+                    }
+                });
+
+                thread.start();
+
                 break;
             case R.id.tableRow1:
                 Spotify.addSong(songs[1]);
+
                 break;
             case R.id.tableRow2:
                 Spotify.addSong(songs[2]);

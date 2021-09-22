@@ -55,13 +55,13 @@ public class DeckAdapter extends BaseAdapter {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_rv_item, parent, false);
         }
         // on below line we are initializing our variables and setting data to our variables.
-        ((TextView) v.findViewById(R.id.idTVCourseName)).setText(courseData.get(position).getCourseName());
+        ((TextView) v.findViewById(R.id.cardSongName)).setText(courseData.get(position).getCourseName());
         ((TextView) v.findViewById(R.id.idTVCourseDescription)).setText(courseData.get(position).getCourseDescription());
         ((TextView) v.findViewById(R.id.idTVCourseDuration)).setText(courseData.get(position).getCourseDuration());
         ((TextView) v.findViewById(R.id.idTVCourseTracks)).setText(courseData.get(position).getCourseTracks());
       //  ((ImageView) v.findViewById(R.id.idIVCourse)).setImageResource(courseData.get(position).getImgId());
 
-        Glide.with(context).load(courseData.get(position).getImgUrl()).into((ImageView) v.findViewById(R.id.idIVCourse));
+        Glide.with(context).load(courseData.get(position).getImgUrl()).into((ImageView) v.findViewById(R.id.cardImage));
         return v;
     }
 }

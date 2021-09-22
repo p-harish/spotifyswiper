@@ -18,8 +18,20 @@ public class Swipe extends AppCompatActivity {
     private static String[] recommendationsArtist = new String[100];
     private static String[] recommendationsURL = new String[100];
 
+    public static boolean loadingDone = false;
+
     private SwipeDeck cardStack;
     private ArrayList<ImagesModal> courseModalArrayList;
+
+    public static void setup() {
+
+        recommendationsName = Spotify.getRecommendationsName();
+        recommendationsCover = Spotify.getRecommendationsCover();
+        recommendationsArtist = Spotify.getRecommendationsArtist();
+        recommendationsURL = Spotify.getRecommendationsURL();
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +40,6 @@ public class Swipe extends AppCompatActivity {
         Log.e("swipe hello", "zz");
 
         Log.d("ok", "oi");
-
-        recommendationsName = Spotify.getRecommendationsName();
-        recommendationsCover = Spotify.getRecommendationsCover();
-        recommendationsArtist = Spotify.getRecommendationsArtist();
-        recommendationsURL = Spotify.getRecommendationsURL();
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         // on below line we are initializing our array list and swipe deck.
         courseModalArrayList = new ArrayList<>();
@@ -59,6 +60,7 @@ public class Swipe extends AppCompatActivity {
         // on below line we are setting adapter to our card stack.
         cardStack.setAdapter(adapter);
 
+        loadingDone = true;
 
         // on below line we are setting event callback to our card stack.
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
@@ -99,5 +101,13 @@ public class Swipe extends AppCompatActivity {
                 Log.i("TAG", "CARDS MOVED UP");
             }
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
     }
 }

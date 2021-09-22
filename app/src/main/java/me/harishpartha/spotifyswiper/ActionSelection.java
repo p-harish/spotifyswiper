@@ -16,8 +16,8 @@ public class ActionSelection extends AppCompatActivity implements View.OnClickLi
 
         Button newPlaylist = findViewById(R.id.newPlaylist);
         newPlaylist.setOnClickListener(this);
-        Button oldPlaylist = findViewById(R.id.oldPlaylist);
-        oldPlaylist.setOnClickListener(this);
+//        Button oldPlaylist = findViewById(R.id.oldPlaylist);
+//        oldPlaylist.setOnClickListener(this);
     }
 
     @Override
@@ -26,11 +26,12 @@ public class ActionSelection extends AppCompatActivity implements View.OnClickLi
             case R.id.newPlaylist:
                 Intent intent = new Intent(this, NewPlaylist.class);
                 startActivity(intent);
+                finish();
                 break;
-            case R.id.oldPlaylist:
-                Intent intent1 = new Intent(this, OldPlaylist.class);
-                startActivity(intent1);
-                break;
+//            case R.id.oldPlaylist:
+//                Intent intent1 = new Intent(this, OldPlaylist.class);
+//                startActivity(intent1);
+//                break;
             default:
                 break;
         }

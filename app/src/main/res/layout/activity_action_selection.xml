@@ -19,14 +19,14 @@
             android:layout_centerHorizontal="true"
             />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/oldPlaylist"
-            android:layout_marginTop="100dp"
-            android:layout_centerHorizontal="true"
-            android:text="Use an old Playlist"
-            />
+<!--        <Button-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/oldPlaylist"-->
+<!--            android:layout_marginTop="100dp"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:text="Use an old Playlist"-->
+<!--            />-->
 
     </RelativeLayout>
 

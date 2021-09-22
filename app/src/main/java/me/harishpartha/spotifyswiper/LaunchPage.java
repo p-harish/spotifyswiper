@@ -88,6 +88,7 @@ public class LaunchPage extends AppCompatActivity implements View.OnClickListene
                     Spotify.getUser();
                     Intent intent2 = new Intent(this, ActionSelection.class);
                     startActivity(intent2);
+                    finish();
 
                     break;
 

@@ -16,14 +16,14 @@
 
         <!--image view for course image-->
         <ImageView
-            android:id="@+id/idIVCourse"
+            android:id="@+id/cardImage"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop" />
 
         <!--text view for our course name-->
         <TextView
-            android:id="@+id/idTVCourseName"
+            android:id="@+id/cardSongName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="3dp"
