@@ -34,6 +34,7 @@ public class Spotify {
 
     public static void setmSpotifyAppRemote(SpotifyAppRemote mSpotifyAppRemote) {
         Spotify.mSpotifyAppRemote = mSpotifyAppRemote;
+        Spotify.mSpotifyAppRemote.getPlayerApi().setRepeat(1);
     }
 
     private static SpotifyAppRemote mSpotifyAppRemote;
@@ -56,6 +57,7 @@ public class Spotify {
     private static String[] recommendationsCover = new String[100];
     private static String[] recommendationsArtist = new String[100];
     private static String[] recommendationsURL = new String[100];
+    private static String[] recommendationsAlbum = new String[100];
 
     private static int recommendationsSize;
 
@@ -77,6 +79,10 @@ public class Spotify {
 
     public static String[] getRecommendationsURL() {
         return recommendationsURL;
+    }
+
+    public static String[] getRecommendationsAlbum() {
+        return recommendationsAlbum;
     }
 
 
@@ -229,7 +235,7 @@ public class Spotify {
 
     }
 
-    public static void addSong(String track) {
+    public static void addSong(String track, int num) {
 
         RequestBody body = RequestBody.create("", null);
 
@@ -259,8 +265,10 @@ public class Spotify {
                     try {
                         jObject = new JSONObject(jString);
                         Log.d("JSON", "addSong " + jString);
-                        queue.add(trackSplice);
-                        getRecommendations();
+                        if (num == 1) {
+                            queue.add(trackSplice);
+                            getRecommendations();
+                        }
                     } catch (JSONException e) {
                         Log.e("JSON", "search failed to make json" + e);
                     }
@@ -315,7 +323,8 @@ public class Spotify {
                             recommendationsArtist[i] = obj.getJSONArray("artists").getJSONObject(0).getString("name");
                             recommendationsCover[i] = obj.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                             recommendationsURL[i] = obj.getString("uri");
-                            Log.d("recommendations:", i + recommendationsURL[i] + recommendationsArtist[i] + recommendationsName[i] + recommendationsCover[i]);
+                            recommendationsAlbum[i] = obj.getJSONObject("album").getString("name");
+                            Log.d("recommendations:", i + recommendationsURL[i] + recommendationsArtist[i] + recommendationsName[i] + recommendationsAlbum[i]);
                         }
 
                     } catch (JSONException e) {

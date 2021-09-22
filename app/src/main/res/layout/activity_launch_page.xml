@@ -6,10 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".LaunchPage">
 
+    <ProgressBar
+        android:id="@+id/launchLoadBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:indeterminate="true" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="There is no Spotify App Installed. Please install it to Continue and restart the app."
+        android:textSize="32dp"
+        android:padding="5dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:id="@+id/noSpotifyMessage"
+        android:visibility="invisible"
+        />
+
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:id="@+id/launchView">
 
         <Button
             android:layout_width="wrap_content"
@@ -17,6 +40,7 @@
             android:id="@+id/spotSignIn"
             android:text="Start"
             />
+
 
     </RelativeLayout>
 

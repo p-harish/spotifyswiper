@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -27,12 +29,20 @@ public class LaunchPage extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_page);
 
+
+
         Button spotSignIn = findViewById(R.id.spotSignIn);
         spotSignIn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
+        ProgressBar launchBar = findViewById(R.id.launchLoadBar);
+        launchBar.setVisibility(View.VISIBLE);
+
+        View launchView = findViewById(R.id.launchView);
+        launchView.setVisibility(View.GONE);
+
         sdkConnect();
     }
 
@@ -53,6 +63,15 @@ public class LaunchPage extends AppCompatActivity implements View.OnClickListene
 
                     @Override
                     public void onFailure(Throwable throwable) {
+                        ProgressBar launchBar = findViewById(R.id.launchLoadBar);
+                        launchBar.setVisibility(View.GONE);
+
+                        Button spotSignIn = findViewById(R.id.spotSignIn);
+                        spotSignIn.setVisibility(View.GONE);
+
+                        TextView noSpotify = findViewById(R.id.noSpotifyMessage);
+                        noSpotify.setVisibility(View.VISIBLE);
+
                         Log.e("MainActivity", throwable.getMessage(), throwable);
                     }
                 });

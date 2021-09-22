@@ -15,7 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -84,75 +86,88 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
             case R.id.enterPlaylistName:
                 EditText playlistName = findViewById(R.id.playlistName);
                 String s = playlistName.getText().toString();
-
+                if (s.length() == 0)
+                    break;
                 LinearLayout createPlaylistView = findViewById(R.id.createPlaylistView);
                 createPlaylistView.setVisibility(View.GONE);
 
                 LinearLayout searchSongsView = findViewById(R.id.songSearchView);
                 searchSongsView.setVisibility(View.VISIBLE);
+
+
                 Spotify.createPlaylist(s);
                 break;
             case R.id.songSearchButton:
                 EditText songSearch = findViewById(R.id.songSearch);
                 String s1 = songSearch.getText().toString();
+                if (s1.length() == 0)
+                    break;
+
+                TableLayout searchResults = findViewById(R.id.searchResults);
+                searchResults.setVisibility(View.VISIBLE);
+
                 Spotify.searchSongs(s1, this);
                 break;
             case R.id.tableRow0:
-                Spotify.addSong(songs[0]);
-                Swipe.setup();
-                Intent intent2 = new Intent(this, Swipe.class);
-
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (!Swipe.loadingDone) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            System.out.println("This code is outside of the thread");
-                            startActivity(intent2);
-                            finish();
-                        }
-                    }
-                });
-
-                thread.start();
-
+                nextPage(0);
                 break;
             case R.id.tableRow1:
-                Spotify.addSong(songs[1]);
-
+                nextPage(1);
                 break;
             case R.id.tableRow2:
-                Spotify.addSong(songs[2]);
+                nextPage(2);
                 break;
             case R.id.tableRow3:
-                Spotify.addSong(songs[3]);
+                nextPage(3);
                 break;
             case R.id.tableRow4:
-                Spotify.addSong(songs[4]);
+                nextPage(4);
                 break;
             case R.id.tableRow5:
-                Spotify.addSong(songs[5]);
+                nextPage(5);
                 break;
             case R.id.tableRow6:
-                Spotify.addSong(songs[6]);
+                nextPage(6);
                 break;
             case R.id.tableRow7:
-                Spotify.addSong(songs[7]);
+                nextPage(7);
                 break;
             case R.id.tableRow8:
-                Spotify.addSong(songs[8]);
+                nextPage(8);
                 break;
             case R.id.tableRow9:
-                Spotify.addSong(songs[9]);
+                nextPage(9);
                 break;
             default:
                 break;
         }
 
+    }
+
+    private void nextPage(int num) {
+        Spotify.addSong(songs[num], 1);
+        Swipe.setup();
+        Intent intent2 = new Intent(this, Swipe.class);
+        ProgressBar prog = findViewById(R.id.newLoadBar);
+        prog.setVisibility(View.VISIBLE);
+
+        View songView = findViewById(R.id.searchSongsView);
+        songView.setVisibility(View.GONE);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("This code is outside of the thread");
+                startActivity(intent2);
+                finish();
+            }
+        });
+        thread.start();
     }
 
     public static void setImages(JSONObject jsonObject, Context context) {

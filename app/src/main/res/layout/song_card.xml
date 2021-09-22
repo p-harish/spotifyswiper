@@ -18,17 +18,22 @@
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="300dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <!--text view for our course name-->
         <TextView
             android:id="@+id/cardSongName"
             android:layout_width="match_parent"
+            android:textSize="26dp"
+            android:maxLines="1"
+            android:lines="1"
             android:layout_height="wrap_content"
             android:padding="3dp"
-            android:text="Course Name"
-            android:textColor="@color/black" />
+            android:text="Song Name"
+            android:textColor="@color/black"
+            android:fontFamily=""/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,35 +43,25 @@
 
             <!--text view for our course tracks-->
             <TextView
-                android:id="@+id/idTVCourseTracks"
+                android:id="@+id/cardArtistName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="3dp"
-                android:text="Course Tracks"
+                android:text="Artist Name"
                 android:textColor="@color/black" />
 
             <!--text view for our course duration-->
             <TextView
-                android:id="@+id/idTVCourseDuration"
+                android:id="@+id/cardAlbumName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="3dp"
-                android:text="Duration"
+                android:text="Album Name"
                 android:textColor="@color/black" />
 
         </LinearLayout>
-
-        <!--text view for our course description-->
-        <TextView
-            android:id="@+id/idTVCourseDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="3dp"
-            android:text="Description"
-            android:textColor="@color/black" />
 
     </LinearLayout>
 
