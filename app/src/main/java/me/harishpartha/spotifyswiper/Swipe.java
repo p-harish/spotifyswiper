@@ -10,29 +10,28 @@ import android.widget.Toast;
 
 import com.daprlabs.cardstack.SwipeDeck;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class Swipe extends AppCompatActivity {
 
-    private static String[] recommendationsName = new String[100];
-    private static String[] recommendationsCover = new String[100];
-    private static String[] recommendationsArtist = new String[100];
-    private static String[] recommendationsAlbum = new String[100];
-    private static String[] recommendationsURL = new String[100];
-
+    private static Deque<Recommendation> recommendations;
     public static boolean loadingDone = false;
 
     private SwipeDeck cardStack;
     private ArrayList<ImagesModal> songCardArray;
 
+    public static boolean refreshStack = false;
+
     public static void setup() {
-
-        recommendationsName = Spotify.getRecommendationsName();
-        recommendationsCover = Spotify.getRecommendationsCover();
-        recommendationsArtist = Spotify.getRecommendationsArtist();
-        recommendationsURL = Spotify.getRecommendationsURL();
-        recommendationsAlbum = Spotify.getRecommendationsAlbum();
-
+        recommendations = new LinkedList<>(Arrays.asList(Spotify.getRecommendationsArray()));
     }
 
     @Override
@@ -40,19 +39,18 @@ public class Swipe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
 
-        Log.e("swipe hello", "zz");
-
-        Log.d("ok", "oi");
-
         songCardArray = new ArrayList<>();
         cardStack = findViewById(R.id.swipe_deck);
 
-        for (int i = 0; i < Spotify.getRecommendationsSize(); i++) {
-            songCardArray.add(new ImagesModal(recommendationsName[i], recommendationsAlbum[i], recommendationsArtist[i], recommendationsCover[i]));
-            Log.e("song", recommendationsURL[i]);
+        Recommendation[] spotifyArray = Spotify.getRecommendationsArray();
+
+        for (int i = 0; i < Spotify.getRecommendationsFilled(); i++) {
+            Recommendation r = spotifyArray[i];
+            songCardArray.add(new ImagesModal(r.getName(), r.getAlbum(), r.getArtist(), r.getCover()));
+            Log.e("song", r.getUrl());
         }
 
-        Spotify.playSong(recommendationsURL[0]);
+        Spotify.playSong(recommendations.peek().getUrl());
 
         final SongStack adapter = new SongStack(songCardArray, this);
 
@@ -63,20 +61,22 @@ public class Swipe extends AppCompatActivity {
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
             public void cardSwipedLeft(int position) {
-                if (position <= 98) {
-                    Spotify.playSong(recommendationsURL[position + 1]);
-                    Log.e("song", recommendationsURL[position + 1]);
-                }
+                recommendations.pop();
+                Spotify.playSong(recommendations.peek().getUrl());
+                Log.e("song", recommendations.peek().getUrl());
+                if (refreshStack)
+                    updateRecommendationStack();
             }
 
             @Override
             public void cardSwipedRight(int position) {
-                if (position <= 98) {
-                    Spotify.playSong(recommendationsURL[position + 1]);
-                    Log.e("song", recommendationsURL[position + 1]);
-
-                }
-                Spotify.addSong(recommendationsURL[position], 0);
+                Spotify.addSong(recommendations.peek().getUrl());
+                recommendations.pop();
+                Spotify.playSong(recommendations.peek().getUrl());
+                Log.e("song", recommendations.peek().getUrl());
+                Spotify.getFreshRecommendations();
+                if (refreshStack)
+                    updateRecommendationStack();
             }
 
             @Override
@@ -110,5 +110,34 @@ public class Swipe extends AppCompatActivity {
     private void done () {
         TextView doneView = findViewById(R.id.finishMessage);
         doneView.setVisibility(View.VISIBLE);
+    }
+
+    private void updateRecommendationStack() {
+        ArrayList<ImagesModal> songCardArrayNew = new ArrayList<>();
+        Deque<Recommendation> recommendationsNew = recommendations;
+
+        Recommendation[] spotifyArray = Spotify.getRecommendationsArray();
+        for (int i = 0; i < Spotify.getRecommendationsFilled(); i++) {
+            Recommendation r = spotifyArray[i];
+            songCardArray.add(new ImagesModal(r.getName(), r.getAlbum(), r.getArtist(), r.getCover()));
+            Log.e("song", r.getUrl());
+        }
+
+
+        int recommendationsSize = recommendations.size();
+
+        Iterator<Recommendation> it = recommendations.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+        while (true) {
+            Recommendation r = spotifyArray[i];
+
+            songCardArray.add(new ImagesModal(r.getName(), r.getAlbum(), r.getArtist(), r.getCover()));
+
+        }
+
+        final SongStack adapter = new SongStack(songCardArray, this);
+
     }
 }

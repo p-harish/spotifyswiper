@@ -18,7 +18,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -51,40 +54,23 @@ public class Spotify {
     private static JSONObject jObject;
     private static String jString = "";
 
-    private static Queue<String> queue = new PriorityQueue<String>();
+    private static HashSet<String> generatedSongs = new HashSet<>();
 
-    private static String[] recommendationsName = new String[100];
-    private static String[] recommendationsCover = new String[100];
-    private static String[] recommendationsArtist = new String[100];
-    private static String[] recommendationsURL = new String[100];
-    private static String[] recommendationsAlbum = new String[100];
+    private static Recommendation recommendations[] = new Recommendation[100];
 
     private static int recommendationsSize;
+
+    private static int recommendationsFilled = 0;
+
+    private static Queue<String> playlist = new LinkedList<>();
 
     public static int getRecommendationsSize() {
         return recommendationsSize;
     }
 
-    public static String[] getRecommendationsName() {
-        return recommendationsName;
+    public static int getRecommendationsFilled() {
+        return recommendationsFilled;
     }
-
-    public static String[] getRecommendationsCover() {
-        return recommendationsCover;
-    }
-
-    public static String[] getRecommendationsArtist() {
-        return recommendationsArtist;
-    }
-
-    public static String[] getRecommendationsURL() {
-        return recommendationsURL;
-    }
-
-    public static String[] getRecommendationsAlbum() {
-        return recommendationsAlbum;
-    }
-
 
     public static boolean isSdkConnection() {
         return sdkConnection;
@@ -111,8 +97,13 @@ public class Spotify {
         accessToken = s;
     }
 
+    public static Recommendation[] getRecommendationsArray() {
+        return recommendations;
+    }
+
     public static void getUser() {
         Log.d("spotify", "getting user");
+
         Request request = new Request.Builder()
                 .header("Authorization", "Bearer " + accessToken)
                 .url("https://api.spotify.com/v1/me")
@@ -183,9 +174,6 @@ public class Spotify {
                     try {
                         jObject = new JSONObject(jString);
                         playListId = jObject.getString("id");
-                        Log.d("JSON", "id " + playListId);
-
-
                     } catch (JSONException e) {
                         Log.e("JSON", "failed to make json" + e);
                     }
@@ -235,7 +223,7 @@ public class Spotify {
 
     }
 
-    public static void addSong(String track, int num) {
+    public static void addSong(String track) {
 
         RequestBody body = RequestBody.create("", null);
 
@@ -264,11 +252,10 @@ public class Spotify {
                     jString = response.body().string();
                     try {
                         jObject = new JSONObject(jString);
-                        Log.d("JSON", "addSong " + jString);
-                        if (num == 1) {
-                            queue.add(trackSplice);
-                            getRecommendations();
-                        }
+                        playlist.add(trackSplice);
+                        if (playlist.size() > 5)
+                            playlist.remove();
+                        getInitialRecommendations();
                     } catch (JSONException e) {
                         Log.e("JSON", "search failed to make json" + e);
                     }
@@ -278,13 +265,73 @@ public class Spotify {
         });
     }
 
-    public static void getRecommendations() {
+    public static void getInitialRecommendations() {
 
         String url = "https://api.spotify.com/v1/recommendations?limit=100&seed_tracks=";
 
         boolean first = true;
 
-        Iterator iterator = queue.iterator();
+        url += playlist.peek();
+
+        Request request = new Request.Builder()
+                .header("Authorization", "Bearer " + accessToken)
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("smoge","smoge");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    jString = response.body().string();
+                    try {
+                        jObject = new JSONObject(jString);
+                        JSONArray arr = jObject.getJSONArray("tracks");
+                        recommendationsSize = arr.length();
+                        int i = 0;
+                        while(i < recommendationsSize) {
+                            JSONObject obj = arr.getJSONObject(i);
+                            Recommendation recommendation = new Recommendation(
+                                    obj.getString("name"),
+                                    obj.getJSONObject("album").getString("name"),
+                                    obj.getJSONArray("artists").getJSONObject(0).getString("name"),
+                                    obj.getString("uri"),
+                                    obj.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url")
+                            );
+                            if (!generatedSongs.contains(recommendation)) {
+                                generatedSongs.add(recommendation.getUrl());
+                                recommendations[i] = recommendation;
+                            }
+                            i++;
+                        }
+                        recommendationsFilled = i;
+                        NewPlaylist.wait = false;
+                    } catch (JSONException e) {
+                        Log.e("JSON", "search failed to make json" + e);
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    public static void getFreshRecommendations() {
+
+        Log.e("GETTING FRESH", "fresh" + playlist.size());
+
+        String url = "https://api.spotify.com/v1/recommendations?limit=100&seed_tracks=";
+
+        boolean first = true;
+
+        Iterator iterator = playlist.iterator();
         while(iterator.hasNext()) {
             if (first) {
                 url += iterator.next();
@@ -317,16 +364,23 @@ public class Spotify {
                         Log.d("JSON", "recommendations " + jString);
                         JSONArray arr = jObject.getJSONArray("tracks");
                         recommendationsSize = arr.length();
-                        for (int i = 0; i < recommendationsSize; i++) {
+                        int i = 0;
+                        while(i < recommendationsSize) {
                             JSONObject obj = arr.getJSONObject(i);
-                            recommendationsName[i] = obj.getString("name");
-                            recommendationsArtist[i] = obj.getJSONArray("artists").getJSONObject(0).getString("name");
-                            recommendationsCover[i] = obj.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                            recommendationsURL[i] = obj.getString("uri");
-                            recommendationsAlbum[i] = obj.getJSONObject("album").getString("name");
-                            Log.d("recommendations:", i + recommendationsURL[i] + recommendationsArtist[i] + recommendationsName[i] + recommendationsAlbum[i]);
+                            Recommendation recommendation = new Recommendation(
+                                    obj.getString("name"),
+                                    obj.getJSONObject("album").getString("name"),
+                                    obj.getJSONArray("artists").getJSONObject(0).getString("name"),
+                                    obj.getString("uri"),
+                                    obj.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url")
+                            );
+                            if (!generatedSongs.contains(recommendation)) {
+                                generatedSongs.add(recommendation.getUrl());
+                                recommendations[i] = recommendation;
+                            }
+                            i++;
                         }
-
+                        Swipe.refreshStack = true;
                     } catch (JSONException e) {
                         Log.e("JSON", "search failed to make json" + e);
                     }
@@ -334,7 +388,6 @@ public class Spotify {
                 }
             }
         });
-
     }
 
     public static void playSong(String track) {

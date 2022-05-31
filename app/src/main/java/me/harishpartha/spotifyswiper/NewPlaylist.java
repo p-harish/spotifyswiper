@@ -43,6 +43,8 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
     private static TextView[] textViews;
     private static TableRow[] tableRows;
 
+    public static boolean wait = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,8 +147,7 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
     }
 
     private void nextPage(int num) {
-        Spotify.addSong(songs[num], 1);
-        Swipe.setup();
+        Spotify.addSong(songs[num]);
         Intent intent2 = new Intent(this, Swipe.class);
         ProgressBar prog = findViewById(R.id.newLoadBar);
         prog.setVisibility(View.VISIBLE);
@@ -158,11 +159,14 @@ public class NewPlaylist extends AppCompatActivity implements View.OnClickListen
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
+                    while (wait) {
+                        Thread.sleep(1000);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 System.out.println("This code is outside of the thread");
+                Swipe.setup();
                 startActivity(intent2);
                 finish();
             }
